@@ -30,7 +30,7 @@ func TestLexer(t *testing.T) {
 			},
 		},
 		{
-			name:  "grouping and alteration",
+			name:  "grouping and alternation",
 			input: "(a|b)",
 			expected: []Token{
 				{Type: TokenLParen},
@@ -58,7 +58,68 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
+		{
+			name:  "escaped star",
+			input: `a\*b`,
+			expected: []Token{
+				{Type: TokenLiteral, Value: 'a'},
+				{Type: TokenLiteral, Value: '*'},
+				{Type: TokenLiteral, Value: 'b'},
+				{Type: TokenEOF},
+			},
+		},
+		{
+			name:  "escaped pipe",
+			input: `a\|b`,
+			expected: []Token{
+				{Type: TokenLiteral, Value: 'a'},
+				{Type: TokenLiteral, Value: '|'},
+				{Type: TokenLiteral, Value: 'b'},
+				{Type: TokenEOF},
+			},
+		},
+		{
+			name:  "escaped parentheses",
+			input: `\(abc\)`,
+			expected: []Token{
+				{Type: TokenLiteral, Value: '('},
+				{Type: TokenLiteral, Value: 'a'},
+				{Type: TokenLiteral, Value: 'b'},
+				{Type: TokenLiteral, Value: 'c'},
+				{Type: TokenLiteral, Value: ')'},
+				{Type: TokenEOF},
+			},
+		},
+		{
+			name:  "escaped backslash",
+			input: `\\`,
+			expected: []Token{
+				{Type: TokenLiteral, Value: '\\'},
+				{Type: TokenEOF},
+			},
+		},
+		{
+			name:  "unsupported escape",
+			input: `\d`,
+			expected: []Token{
+				{Type: TokenLiteral, Value: '\\'},
+				{Type: TokenLiteral, Value: 'd'},
+				{Type: TokenEOF},
+			},
+		},
+		{
+			name:  "trailing backslash",
+			input: `abc\`,
+			expected: []Token{
+				{Type: TokenLiteral, Value: 'a'},
+				{Type: TokenLiteral, Value: 'b'},
+				{Type: TokenLiteral, Value: 'c'},
+				{Type: TokenLiteral, Value: '\\'},
+				{Type: TokenEOF},
+			},
+		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := New(tt.input)

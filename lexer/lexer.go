@@ -22,6 +22,10 @@ func (l *Lexer) NextToken() Token {
 	ch := l.input[l.pos]
 	l.pos++
 
+	if ch == '\\' {
+		return l.readEscape()
+	}
+
 	switch ch {
 	case '.':
 		return Token{Type: TokenDot}
@@ -42,5 +46,39 @@ func (l *Lexer) NextToken() Token {
 			Type:  TokenLiteral,
 			Value: ch,
 		}
+	}
+}
+
+func (l *Lexer) readEscape() Token {
+	if l.pos >= len(l.input) {
+		return Token{
+			Type:  TokenLiteral,
+			Value: '\\',
+		}
+	}
+
+	next := l.input[l.pos]
+
+	if !isEscapable(next) {
+		return Token{
+			Type:  TokenLiteral,
+			Value: '\\',
+		}
+	}
+
+	l.pos++
+
+	return Token{
+		Type:  TokenLiteral,
+		Value: next,
+	}
+}
+
+func isEscapable(ch rune) bool {
+	switch ch {
+	case '.', '*', '+', '?', '|', '(', ')', '\\':
+		return true
+	default:
+		return false
 	}
 }
