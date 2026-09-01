@@ -45,11 +45,45 @@ func (p *Parser) Parse() (ast.Node, error) { // Parser parses and returns error 
 }
 
 func (p *Parser) parseExpression() (ast.Node, error) { // as of now expression -> primary so this is useless but in the future experession -> alternation -> ... -> primary, then ts will be useful
-	return p.parsePrimary()
+	return p.parseRepetition()
 }
 
-func (p *Parser) parsePrimary() (ast.Node, error) { //now parsing primary
-	switch p.current.Type { // cases for literals, dot, lparen, rparen
+func (p *Parser) parseRepetition() (ast.Node, error) {
+	node, err := p.parsePrimary()
+	if err != nil {
+		return nil, err
+	}
+
+	for {
+		switch p.current.Type {
+		case lexer.TokenStar:
+			p.advance()
+
+			node = &ast.Star{
+				Expr: node,
+			}
+
+		case lexer.TokenPlus:
+			p.advance()
+
+			node = &ast.Plus{
+				Expr: node,
+			}
+		case lexer.TokenQuestion:
+			p.advance()
+
+			node = &ast.Question{
+				Expr: node,
+			}
+
+		default:
+			return node, nil
+		}
+	}
+}
+
+func (p *Parser) parsePrimary() (ast.Node, error) {
+	switch p.current.Type {
 	case lexer.TokenLiteral:
 		value := p.current.Value
 		p.advance()
@@ -67,6 +101,7 @@ func (p *Parser) parsePrimary() (ast.Node, error) { //now parsing primary
 		p.advance()
 
 		node, err := p.parseExpression()
+
 		if err != nil {
 			return nil, err
 		}
