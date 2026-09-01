@@ -150,3 +150,52 @@ func TestParsedQuantifiers(t *testing.T) {
 		})
 	}
 }
+
+func TestParserFullExpression(t *testing.T) {
+	p := New("a(b|c)*")
+
+	actual, err := p.Parse()
+	if err != nil {
+		t.Fatalf("unexpected parse error: %v", err)
+	}
+
+	expected := &ast.Concat{
+		Left: &ast.Literal{Value: 'a'},
+		Right: &ast.Star{
+			Expr: &ast.Alternation{
+				Left:  &ast.Literal{Value: 'b'},
+				Right: &ast.Literal{Value: 'c'},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("expected %#v, got %#v", expected, actual)
+	}
+}
+
+func TestParserPrecedence(t *testing.T) {
+	p := New("ab|cd*")
+
+	actual, err := p.Parse()
+	if err != nil {
+		t.Fatalf("unexpected parse error: %v", err)
+	}
+
+	expected := &ast.Alternation{
+		Left: &ast.Concat{
+			Left:  &ast.Literal{Value: 'a'},
+			Right: &ast.Literal{Value: 'b'},
+		},
+		Right: &ast.Concat{
+			Left: &ast.Literal{Value: 'c'},
+			Right: &ast.Star{
+				Expr: &ast.Literal{Value: 'd'},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("expected %#v, got %#v", expected, actual)
+	}
+}

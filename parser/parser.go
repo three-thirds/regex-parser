@@ -45,7 +45,50 @@ func (p *Parser) Parse() (ast.Node, error) { // Parser parses and returns error 
 }
 
 func (p *Parser) parseExpression() (ast.Node, error) { // as of now expression -> primary so this is useless but in the future experession -> alternation -> ... -> primary, then ts will be useful
-	return p.parseRepetition()
+	return p.parseAlternation()
+}
+
+func (p *Parser) parseAlternation() (ast.Node, error) {
+	left, err := p.parseConcatenation()
+	if err != nil {
+		return nil, err
+	}
+
+	for p.current.Type == lexer.TokenPipe {
+		p.advance()
+
+		right, err := p.parseConcatenation()
+		if err != nil {
+			return nil, err
+		}
+
+		left = &ast.Alternation{
+			Left:  left,
+			Right: right,
+		}
+	}
+
+	return left, nil
+}
+
+func (p *Parser) parseConcatenation() (ast.Node, error) {
+	left, err := p.parseRepetition()
+	if err != nil {
+		return nil, err
+	}
+
+	for canStartPrimary(p.current.Type) {
+		right, err := p.parseRepetition()
+		if err != nil {
+			return nil, err
+		}
+
+		left = &ast.Concat{
+			Left:  left,
+			Right: right,
+		}
+	}
+	return left, nil
 }
 
 func (p *Parser) parseRepetition() (ast.Node, error) {
@@ -122,5 +165,16 @@ func (p *Parser) parsePrimary() (ast.Node, error) {
 			"unexpected token: %v",
 			p.current,
 		)
+	}
+}
+
+func canStartPrimary(tokenType lexer.TokenType) bool {
+	switch tokenType {
+	case lexer.TokenLiteral,
+		lexer.TokenDot,
+		lexer.TokenLParen:
+		return true
+	default:
+		return false
 	}
 }
