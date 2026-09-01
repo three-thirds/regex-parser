@@ -1,15 +1,16 @@
 package ast
 
-type Node interface {
+type Node interface { // Define the node interface that all AST nodes must implement.
 	node()
 }
 
-type Literal struct {
+type Literal struct { // Defines literal AST node representing a literal character.
 	Value rune
 }
 
-func (*Literal) node() {}
-
+func (*Literal) node() {} // Implements the Node interface for the literal.
+// Defines all stuff like Dot, Concat, Alternation, Star, Plus, Question, etc.
+// In the lines given below by storing them then implementing the node interface.
 type Dot struct{}
 
 func (*Dot) node() {}

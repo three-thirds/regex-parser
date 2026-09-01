@@ -1,20 +1,21 @@
 package lexer
 
-type Lexer struct {
-	input []rune
+type Lexer struct { // Defines lexer structure, storing input regex and current position.
+	input []rune // Store input as slice of runes (unicode support!!)
 	pos   int
 }
 
-func New(input string) *Lexer {
+func New(input string) *Lexer { // Creates and initializes a new Lexer from the given input string.
 	return &Lexer{
-		input: []rune(input),
+		input: []rune(input), // Starts the lexer at first character.
 		pos:   0,
 	}
 }
 
-func (l *Lexer) NextToken() Token {
+// Return the next token from the input.
+func (l *Lexer) NextToken() Token { // Check whether lexer reached end of input.
 	if l.pos >= len(l.input) {
-		return Token{
+		return Token{ // Return EOF if no chars left.
 			Type: TokenEOF,
 		}
 	}
@@ -26,7 +27,7 @@ func (l *Lexer) NextToken() Token {
 		return l.readEscape()
 	}
 
-	switch ch {
+	switch ch { // Match regex chars and convert them into corresponding types.
 	case '.':
 		return Token{Type: TokenDot}
 	case '*':
@@ -49,9 +50,9 @@ func (l *Lexer) NextToken() Token {
 	}
 }
 
-func (l *Lexer) readEscape() Token {
+func (l *Lexer) readEscape() Token { // Check whether backslash is final character in input.
 	if l.pos >= len(l.input) {
-		return Token{
+		return Token{ // Treat trailing backslash as a literal backslash.
 			Type:  TokenLiteral,
 			Value: '\\',
 		}
@@ -59,7 +60,7 @@ func (l *Lexer) readEscape() Token {
 
 	next := l.input[l.pos]
 
-	if !isEscapable(next) {
+	if !isEscapable(next) { // Checks whether a character can be escaped by the lexer.
 		return Token{
 			Type:  TokenLiteral,
 			Value: '\\',
@@ -74,7 +75,7 @@ func (l *Lexer) readEscape() Token {
 	}
 }
 
-func isEscapable(ch rune) bool {
+func isEscapable(ch rune) bool { // Determines all characters which can be escaped by the lexer.
 	switch ch {
 	case '.', '*', '+', '?', '|', '(', ')', '\\':
 		return true

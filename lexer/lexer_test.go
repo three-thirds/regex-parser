@@ -2,13 +2,13 @@ package lexer
 
 import "testing"
 
-func TestLexer(t *testing.T) {
-	tests := []struct {
+func TestLexer(t *testing.T) { // Define TestLexer function
+	tests := []struct { // Define all tests in a table structure
 		name     string
 		input    string
 		expected []Token
 	}{
-		{
+		{ // test ordinary chars as literals.
 			name:  "literals",
 			input: "abc",
 			expected: []Token{
@@ -18,7 +18,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // test recognition of operators
 			name:  "operators",
 			input: ".*+?",
 			expected: []Token{
@@ -29,7 +29,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // Tests grouping and alternation
 			name:  "grouping and alternation",
 			input: "(a|b)",
 			expected: []Token{
@@ -41,7 +41,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // Test complex patterns
 			name:  "complex pattern",
 			input: "ab(c|d)*e+",
 			expected: []Token{
@@ -58,7 +58,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // Test an escaping star
 			name:  "escaped star",
 			input: `a\*b`,
 			expected: []Token{
@@ -68,7 +68,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // test escaping pipe
 			name:  "escaped pipe",
 			input: `a\|b`,
 			expected: []Token{
@@ -78,7 +78,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // tests escaped parentheses
 			name:  "escaped parentheses",
 			input: `\(abc\)`,
 			expected: []Token{
@@ -90,7 +90,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // Tests an escaped backslash
 			name:  "escaped backslash",
 			input: `\\`,
 			expected: []Token{
@@ -98,7 +98,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // test an unsupported escape
 			name:  "unsupported escape",
 			input: `\d`,
 			expected: []Token{
@@ -107,7 +107,7 @@ func TestLexer(t *testing.T) {
 				{Type: TokenEOF},
 			},
 		},
-		{
+		{ // tests for trailing backslash
 			name:  "trailing backslash",
 			input: `abc\`,
 			expected: []Token{
