@@ -1,2 +1,59 @@
 # regex-parser
 An implementation of a regex parser in golang ^_^
+
+This project currently supports tokenizing and parsing basic regular expressions into an Abstract Syntax Tree (AST).
+
+## Current Features:
+
+- Literal Characters
+- Wildcard: .
+- Quantifiers: *, +, ?
+- Grouping with ()
+- Alternation with |
+- Implicit concatenation
+- Escaped regex metacharacters
+- AST pretty printing
+- CLI for viewing tokens and parsed ASTs
+
+## Example:
+
+Parse a regex:
+
+``` go run ./cmd/regex parse 'a(b|c)*' ```
+
+Output:
+
+```
+Concat
+  Literal(a)
+  Star
+    Alternation
+      Literal(b)
+      Literal(c)
+```
+
+View lexer tokens:
+
+``` go run ./cmd/regex tokens 'a(b|c)*' ```
+
+Output:
+
+```
+LITERAL(a) 
+LPAREN 
+LITERAL(b) 
+PIPE 
+LITERAL(c) 
+RPAREN 
+STAR 
+EOF
+```
+
+Architecture:
+
+Regex -> Lexer -> Tokens -> Parser -> AST -> NFA -> Matcher
+
+The lexer, parser and AST is implemented.
+NFA Compilation and Matching is currently under implementation.
+
+Made with <3 by Three Thirds!
