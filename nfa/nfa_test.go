@@ -1,5 +1,7 @@
 package nfa
 
+// Tests for the NFA builder utilities.
+
 import "testing"
 
 func TestBuilder(t *testing.T) {

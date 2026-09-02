@@ -3,6 +3,7 @@
 #
 # Binaries for programs and plugins
 *.exe
+# Ignore broken dreams and leftover snacks
 *.exe~
 *.dll
 *.so

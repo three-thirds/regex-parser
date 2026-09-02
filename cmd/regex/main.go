@@ -1,5 +1,8 @@
 package main
 
+// Command-line entrypoint for simple regex tooling: token printing
+// and AST printing utilities used during development.
+
 import (
 	"fmt"
 	"os"

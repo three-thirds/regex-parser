@@ -1,5 +1,8 @@
 package parser
 
+// Package parser converts a stream of tokens into an abstract syntax
+// tree (AST) representing the regular expression.
+
 import ( // importing fmt, ast and lexer
 	"fmt"
 
@@ -7,11 +10,13 @@ import ( // importing fmt, ast and lexer
 	"regex/lexer"
 )
 
+// Parser holds the lexer and the current token during parsing.
 type Parser struct {
-	lexer   *lexer.Lexer // future tokens come from here
-	current lexer.Token  // token we are looking at
+	lexer   *lexer.Lexer
+	current lexer.Token
 }
 
+// New creates a Parser for the provided input string.
 func New(input string) *Parser {
 	l := lexer.New(input)
 
@@ -24,11 +29,14 @@ func New(input string) *Parser {
 	return p
 }
 
+// advance consumes the next token from the lexer and stores it
+// as the parser's current token.
 func (p *Parser) advance() {
 	p.current = p.lexer.NextToken()
 }
 
-func (p *Parser) Parse() (ast.Node, error) { // Parser parses and returns error if any
+// Parse parses the input and returns the root AST node or an error.
+func (p *Parser) Parse() (ast.Node, error) {
 	node, err := p.parseExpression()
 	if err != nil {
 		return nil, err

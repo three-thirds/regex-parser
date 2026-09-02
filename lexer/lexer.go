@@ -1,19 +1,24 @@
 package lexer
 
+// Package lexer implements tokenization (lexing) of regex input.
+// It converts an input string into a stream of tokens for parsing.
+
 type Lexer struct { // Defines lexer structure, storing input regex and current position.
 	input []rune // Store input as slice of runes (unicode support!!)
 	pos   int
 }
 
-func New(input string) *Lexer { // Creates and initializes a new Lexer from the given input string.
+// New creates and returns a Lexer for the provided input string.
+func New(input string) *Lexer {
 	return &Lexer{
 		input: []rune(input), // Starts the lexer at first character.
 		pos:   0,
 	}
 }
 
-// Return the next token from the input.
-func (l *Lexer) NextToken() Token { // Check whether lexer reached end of input.
+// NextToken returns the next Token from the input stream. When the
+// end of input is reached it returns a Token with Type TokenEOF.
+func (l *Lexer) NextToken() Token {
 	if l.pos >= len(l.input) {
 		return Token{ // Return EOF if no chars left.
 			Type: TokenEOF,
@@ -50,9 +55,12 @@ func (l *Lexer) NextToken() Token { // Check whether lexer reached end of input.
 	}
 }
 
-func (l *Lexer) readEscape() Token { // Check whether backslash is final character in input.
+// readEscape handles an escape sequence starting after a backslash.
+// If the backslash is the final character or the following rune is not
+// escapable, it treats the backslash as a literal backslash.
+func (l *Lexer) readEscape() Token {
 	if l.pos >= len(l.input) {
-		return Token{ // Treat trailing backslash as a literal backslash.
+		return Token{
 			Type:  TokenLiteral,
 			Value: '\\',
 		}
@@ -60,7 +68,7 @@ func (l *Lexer) readEscape() Token { // Check whether backslash is final charact
 
 	next := l.input[l.pos]
 
-	if !isEscapable(next) { // Checks whether a character can be escaped by the lexer.
+	if !isEscapable(next) {
 		return Token{
 			Type:  TokenLiteral,
 			Value: '\\',
@@ -75,7 +83,9 @@ func (l *Lexer) readEscape() Token { // Check whether backslash is final charact
 	}
 }
 
-func isEscapable(ch rune) bool { // Determines all characters which can be escaped by the lexer.
+// isEscapable reports whether a rune may follow a backslash to form
+// a valid escape sequence in this lexer.
+func isEscapable(ch rune) bool {
 	switch ch {
 	case '.', '*', '+', '?', '|', '(', ')', '\\':
 		return true

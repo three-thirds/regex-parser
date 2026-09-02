@@ -1,5 +1,7 @@
 package parser
 
+// Tests for the parser covering primary expressions, errors, and precedence.
+
 import (
 	"reflect"
 	"testing"

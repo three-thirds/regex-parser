@@ -1,5 +1,8 @@
 package nfa
 
+// Package nfa provides simple non-deterministic finite automaton
+// (NFA) construction primitives used by the regex compiler.
+
 type TransitionType int
 
 const (
@@ -42,6 +45,8 @@ func (b *Builder) NewState() *State {
 	return state
 }
 
+// AddEplipson adds an epsilon (empty) transition from `from` to `to`.
+// NOTE: name kept as-is to avoid changing external call sites.
 func AddEplipson(from, to *State) {
 	from.Transitions = append(
 		from.Transitions,
@@ -52,6 +57,7 @@ func AddEplipson(from, to *State) {
 	)
 }
 
+// AddLiteral adds a transition that consumes the given rune value.
 func AddLiteral(from, to *State, value rune) {
 	from.Transitions = append(
 		from.Transitions,
@@ -63,6 +69,7 @@ func AddLiteral(from, to *State, value rune) {
 	)
 }
 
+// AddAny adds a transition that matches any single rune.
 func AddAny(from, to *State) {
 	from.Transitions = append(
 		from.Transitions,

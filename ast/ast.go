@@ -1,5 +1,9 @@
 package ast
 
+// Package ast defines the abstract syntax tree node types used
+// by the regex parser. Each node implements the unexported
+// `node()` method to satisfy the Node interface.
+
 type Node interface { // Define the node interface that all AST nodes must implement.
 	node()
 }

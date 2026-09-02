@@ -1,8 +1,10 @@
 package lexer
 
+// Package-level comments: Token types and Token values used by the lexer.
+
 import "fmt" // Importing fmt for formatting literal token values.
 
-type TokenType int // Defines TokenType as an integer based type for identifying token kinds.
+type TokenType int // TokenType enumerates the different kinds of tokens emitted by the lexer.
 
 const ( // Declaring all token types. (supported by lexer)
 	TokenLiteral TokenType = iota
@@ -16,12 +18,14 @@ const ( // Declaring all token types. (supported by lexer)
 	TokenEOF
 )
 
-type Token struct { // Defines a token, containing it's type and character value.
+// Token represents a single token produced by the lexer.
+type Token struct {
 	Type  TokenType
 	Value rune
 }
 
-func (t Token) String() string { // Converts a token into human readable string. (really needed ts for debugging DO NOT DELETE IT!)
+// String returns a human-readable representation of t. Useful for debugging.
+func (t Token) String() string {
 	switch t.Type {
 	case TokenLiteral:
 		return fmt.Sprintf("LITERAL(%c)", t.Value)

@@ -1,4 +1,6 @@
 # regex-parser
+
+<!-- README: This project is fueled by curiosity and snacks. -->
 An implementation of a regex parser in golang ^_^
 
 This project currently supports tokenizing and parsing basic regular expressions into an Abstract Syntax Tree (AST).

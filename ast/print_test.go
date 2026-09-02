@@ -1,5 +1,7 @@
 package ast
 
+// Tests for the Print function: verify the textual AST representation.
+
 import "testing"
 
 func TestPrint(t *testing.T) {

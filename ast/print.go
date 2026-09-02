@@ -1,5 +1,8 @@
 package ast
 
+// Print returns a formatted, human-readable representation
+// of the AST rooted at the given node.
+
 import (
 	"fmt"
 	"strings"
@@ -13,6 +16,8 @@ func Print(node Node) string {
 	return builder.String()
 }
 
+// printNode writes a textual representation of node into builder
+// indenting child nodes according to depth.
 func printNode(builder *strings.Builder, node Node, depth int) {
 	indent := strings.Repeat("  ", depth)
 

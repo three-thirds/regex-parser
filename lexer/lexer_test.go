@@ -1,5 +1,7 @@
 package lexer
 
+// Tests for lexer.NextToken covering literals, operators and escapes.
+
 import "testing"
 
 func TestLexer(t *testing.T) { // Define TestLexer function
