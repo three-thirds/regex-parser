@@ -4,26 +4,63 @@ import (
 	"fmt"
 	"os"
 
+	"regex/ast"
 	"regex/lexer" // Importing custom lexer package!
+	"regex/parser"
 )
 
-func main() { // Define program's entry point
-	if len(os.Args) != 2 {
-		fmt.Println("usage: regex <pattern>")
-		os.Exit(1) // Exit with non zero if any error comes.
+func main() {
+	if len(os.Args) < 3 {
+		printUsage()
+		os.Exit(1)
 	}
 
-	pattern := os.Args[1]
+	command := os.Args[1]
+	pattern := os.Args[2]
 
-	l := lexer.New(pattern) // Create a new lexer for any given lexer pattern.
+	switch command {
+	case "tokens":
+		runTokens(pattern)
+
+	case "parse":
+		runParse(pattern)
+
+	default:
+		fmt.Printf("unknown command: %s\n", command)
+		printUsage()
+		os.Exit(1)
+	}
+}
+
+func runTokens(pattern string) {
+	l := lexer.New(pattern)
 
 	for {
-		token := l.NextToken() // Read next token from Lexer
+		token := l.NextToken()
 
-		fmt.Println(token) // Print token using String()
+		fmt.Println(token)
 
-		if token.Type == lexer.TokenEOF { // break if EOF
+		if token.Type == lexer.TokenEOF {
 			break
 		}
 	}
+}
+
+func runParse(pattern string) {
+	p := parser.New(pattern)
+
+	node, err := p.Parse()
+
+	if err != nil {
+		fmt.Printf("Parse error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Print(ast.Print(node))
+}
+
+func printUsage() {
+	fmt.Println("usage:")
+	fmt.Println("  regex tokens <pattern>")
+	fmt.Println("  regex parse <pattern>")
 }
