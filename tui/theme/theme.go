@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	PrimaryColor   = lipgloss.Color("#7D56F4")
-	SecondaryColor = lipgloss.Color("#04B575")
+	PrimaryColor   = lipgloss.Color("#83C092")
+	SecondaryColor = lipgloss.Color("#98AF77")
 	ErrorColor     = lipgloss.Color("#FF4C4C")
 	MutedColor     = lipgloss.Color("#626262")
 	BgAccentColor  = lipgloss.Color("#1E1E2E")
