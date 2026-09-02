@@ -9,10 +9,15 @@ import (
 	"regex/ast"
 )
 
+// Compiler converts AST nodes into NFA fragments used during
+// regex compilation.
 type Compiler struct {
 	builder *Builder
 }
 
+// fragment represents a small NFA with a single entry (`start`)
+// and a single accept (`accept`) state used while composing
+// larger NFAs from AST nodes.
 type fragment struct {
 	start  *State
 	accept *State
@@ -22,6 +27,13 @@ func NewCompiler() *Compiler {
 	return &Compiler{
 		builder: NewBuilder(),
 	}
+}
+
+// NewCompiler constructs and returns a ready-to-use Compiler.
+
+func Compile(node ast.Node) (*NFA, error) {
+	compiler := NewCompiler()
+	return compiler.Compile(node)
 }
 
 // Compile converts the given AST node into an NFA. It returns the
@@ -183,6 +195,11 @@ func (c *Compiler) compilePlus(node *ast.Plus) (fragment, error) {
 	}, nil
 }
 
+// compilePlus creates a fragment that matches one or more repetitions
+// of the inner expression (the `+` quantifier). It ensures at least
+// one instance of the inner fragment can be matched, then loops back
+// to allow additional repetitions.
+
 func (c *Compiler) compileQuestion(node *ast.Question) (fragment, error) {
 	inner, err := c.compileNode(node.Expr)
 	if err != nil {
@@ -202,3 +219,7 @@ func (c *Compiler) compileQuestion(node *ast.Question) (fragment, error) {
 		accept: accept,
 	}, nil
 }
+
+// compileQuestion creates a fragment that matches zero or one
+// occurrences of the inner expression (the `?` quantifier). It
+// provides an epsilon path that bypasses the inner fragment.

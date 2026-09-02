@@ -55,7 +55,7 @@ Architecture:
 
 Regex -> Lexer -> Tokens -> Parser -> AST -> NFA -> Matcher
 
-The lexer, parser and AST is implemented.
-NFA Compilation and Matching is currently under implementation.
+The lexer, parser and AST are implemented.
+The AST -> NFA compiler is implemented and tested; matching is available via the `matcher` package.
 
 Made with <3 by Three Thirds!
