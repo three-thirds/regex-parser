@@ -47,6 +47,9 @@ func (c *Compiler) compileNode(node ast.Node) (fragment, error) {
 	case *ast.Dot:
 		return c.compileDot(), nil
 
+	case *ast.Concat:
+		return c.compileConcat(n)
+
 	default:
 		return fragment{}, fmt.Errorf("unsupported AST node: %T", node)
 	}
@@ -76,4 +79,29 @@ func (c *Compiler) compileDot() fragment {
 		start:  start,
 		accept: accept,
 	}
+}
+
+// compileConcat combines two fragments by connecting the accept state
+// of the left fragment to the start state of the right fragment with
+// an epsilon transition, producing a new fragment that represents
+// the concatenation of the two subexpressions.
+func (c *Compiler) compileConcat(node *ast.Concat) (fragment, error) {
+	left, err := c.compileNode(node.Left)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	right, err := c.compileNode(node.Right)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	// Use the builder helper to add an epsilon transition between
+	// the two sub-fragments.
+	AddEplipson(left.accept, right.start)
+
+	return fragment{
+		start:  left.start,
+		accept: right.accept,
+	}, nil
 }
