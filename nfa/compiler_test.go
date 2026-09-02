@@ -94,3 +94,27 @@ func TestCompileConcat(t *testing.T) {
 		t.Fatal("unexpected concatenated NFA")
 	}
 }
+
+func TestCompileAlternation(t *testing.T) {
+	compiler := NewCompiler()
+
+	node := &ast.Alternation{
+		Left:  &ast.Literal{Value: 'a'},
+		Right: &ast.Literal{Value: 'b'},
+	}
+
+	machine, err := compiler.Compile(node)
+	if err != nil {
+		t.Fatalf("unexpected compile error: %v", err)
+	}
+
+	if len(machine.Start.Transitions) != 2 {
+		t.Fatal("expected two epsilon branches from start")
+	}
+
+	for _, transition := range machine.Start.Transitions {
+		if transition.Type != TransitionEpsilon {
+			t.Fatal("expected epsilon transition from an alternation start")
+		}
+	}
+}

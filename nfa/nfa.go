@@ -45,9 +45,8 @@ func (b *Builder) NewState() *State {
 	return state
 }
 
-// AddEplipson adds an epsilon (empty) transition from `from` to `to`.
-// NOTE: name kept as-is to avoid changing external call sites.
-func AddEplipson(from, to *State) {
+// AddEpsilon adds an epsilon (empty) transition from `from` to `to`.
+func AddEpsilon(from, to *State) {
 	from.Transitions = append(
 		from.Transitions,
 		Transition{
@@ -55,6 +54,11 @@ func AddEplipson(from, to *State) {
 			To:   to,
 		},
 	)
+}
+
+// AddEplipson is kept as a compatibility alias for older call sites.
+func AddEplipson(from, to *State) {
+	AddEpsilon(from, to)
 }
 
 // AddLiteral adds a transition that consumes the given rune value.

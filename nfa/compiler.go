@@ -50,6 +50,9 @@ func (c *Compiler) compileNode(node ast.Node) (fragment, error) {
 	case *ast.Concat:
 		return c.compileConcat(n)
 
+	case *ast.Alternation:
+		return c.compileAlternation(n)
+
 	default:
 		return fragment{}, fmt.Errorf("unsupported AST node: %T", node)
 	}
@@ -98,10 +101,36 @@ func (c *Compiler) compileConcat(node *ast.Concat) (fragment, error) {
 
 	// Use the builder helper to add an epsilon transition between
 	// the two sub-fragments.
-	AddEplipson(left.accept, right.start)
+	AddEpsilon(left.accept, right.start)
 
 	return fragment{
 		start:  left.start,
 		accept: right.accept,
+	}, nil
+}
+
+func (c *Compiler) compileAlternation(node *ast.Alternation) (fragment, error) {
+	left, err := c.compileNode(node.Left)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	right, err := c.compileNode(node.Right)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	start := c.builder.NewState()
+	accept := c.builder.NewState()
+
+	AddEpsilon(start, left.start)
+	AddEpsilon(start, right.start)
+
+	AddEpsilon(left.accept, accept)
+	AddEpsilon(right.accept, accept)
+
+	return fragment{
+		start:  start,
+		accept: accept,
 	}, nil
 }
