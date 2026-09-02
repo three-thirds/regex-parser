@@ -53,6 +53,15 @@ func (c *Compiler) compileNode(node ast.Node) (fragment, error) {
 	case *ast.Alternation:
 		return c.compileAlternation(n)
 
+	case *ast.Star:
+		return c.compileStar(n)
+
+	case *ast.Plus:
+		return c.compilePlus(n)
+
+	case *ast.Question:
+		return c.compileQuestion(n)
+
 	default:
 		return fragment{}, fmt.Errorf("unsupported AST node: %T", node)
 	}
@@ -128,6 +137,65 @@ func (c *Compiler) compileAlternation(node *ast.Alternation) (fragment, error) {
 
 	AddEpsilon(left.accept, accept)
 	AddEpsilon(right.accept, accept)
+
+	return fragment{
+		start:  start,
+		accept: accept,
+	}, nil
+}
+
+func (c *Compiler) compileStar(node *ast.Star) (fragment, error) {
+	inner, err := c.compileNode(node.Expr)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	start := c.builder.NewState()
+	accept := c.builder.NewState()
+
+	AddEpsilon(start, inner.start)
+	AddEpsilon(start, accept)
+
+	AddEpsilon(inner.accept, inner.start)
+	AddEpsilon(inner.accept, accept)
+
+	return fragment{
+		start:  start,
+		accept: accept,
+	}, nil
+}
+
+func (c *Compiler) compilePlus(node *ast.Plus) (fragment, error) {
+	inner, err := c.compileNode(node.Expr)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	start := c.builder.NewState()
+	accept := c.builder.NewState()
+
+	AddEpsilon(inner.accept, inner.start)
+	AddEpsilon(inner.accept, accept)
+
+	return fragment{
+		start:  start,
+		accept: accept,
+	}, nil
+}
+
+func (c *Compiler) compileQuestion(node *ast.Question) (fragment, error) {
+	inner, err := c.compileNode(node.Expr)
+	if err != nil {
+		return fragment{}, err
+	}
+
+	start := c.builder.NewState()
+	accept := c.builder.NewState()
+
+	AddEpsilon(start, inner.start)
+	AddEpsilon(start, accept)
+
+	AddEpsilon(inner.accept, accept)
 
 	return fragment{
 		start:  start,

@@ -118,3 +118,44 @@ func TestCompileAlternation(t *testing.T) {
 		}
 	}
 }
+
+func TestCompileQuantifiers(t *testing.T) {
+	tests := []struct {
+		name string
+		node ast.Node
+	}{
+		{
+			name: "star",
+			node: &ast.Star{
+				Expr: &ast.Literal{Value: 'a'},
+			},
+		},
+		{
+			name: "plus",
+			node: &ast.Plus{
+				Expr: &ast.Literal{Value: 'a'},
+			},
+		},
+		{
+			name: "question",
+			node: &ast.Question{
+				Expr: &ast.Literal{Value: 'a'},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			compiler := NewCompiler()
+
+			machine, err := compiler.Compile(tt.node)
+			if err != nil {
+				t.Fatalf("unexpected compile error: %v", err)
+			}
+
+			if machine.Start == nil || machine.Accept == nil {
+				t.Fatal("expected valid start and accept states")
+			}
+		})
+	}
+}
